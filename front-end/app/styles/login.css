@@ -21,6 +21,7 @@
   padding: 2.2rem 2rem 2rem;
 }
 
+.login-logo{}
 .login-brand {
   width: min(100%, 460px);
   margin: 0 0 1.1rem;
@@ -140,7 +141,7 @@
   position: relative;
   flex: 1;
   min-height: 100vh;
-  background-image: url("/image/login-image.svg");
+  background-image: url("./image/login-image.svg");
   background-size: cover;
   background-position: center center;
 }
@@ -161,7 +162,7 @@
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 999px;
   padding: 1rem 1.4rem;
-  color: #0f172a;
+  color: blue;
   font-size: 0.96rem;
   line-height: 1.4;
   box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
