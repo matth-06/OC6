@@ -9,11 +9,9 @@ import { type RouteConfig, index, route, layout } from "@react-router/dev/routes
  * - Gestion des erreurs pour les routes inexistantes
  */
 export default [
-  // Routes publiques
-  index("routes/home.tsx"),
   
   // Authentification (non protégées)
-  route("login", "routes/login.tsx"),
+  index("routes/login.tsx"),
   route("register", "routes/register.tsx"),
 
   // Routes protégées
