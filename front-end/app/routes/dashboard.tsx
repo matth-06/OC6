@@ -3,22 +3,20 @@ import { mockGetUserActivity, mockGetUserInfo } from "../data/mockData";
 import { useAuth, useRequireAuth } from "../hooks/useAuth";
 import DashboardFooter from "../components/DashboardFooter";
 import DashboardHeader from "../components/DashboardHeader";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ComposedChart, Line,} from "recharts";
 import "../styles/dashboard.css";
 
 
-// --- Données d'exemple : à remplacer par tes vraies données ---
-const data = [
-  { name: "S1", km: 20, periode: "28.05 au 03.06" },
-  { name: "S2", km: 24.5, periode: "04.06 au 10.06" },
-  { name: "S3", km: 15.5, periode: "11.06 au 17.06" },
-  { name: "S4", km: 30, periode: "18.06 au 24.06" },
-];
- 
 const COLOR_DEFAULT = "#aab4fb"; // barre au repos (mauve clair)
 const COLOR_ACTIVE = "#2400ff"; // barre survolée (bleu vif)
  
-function CustomTooltip({ active, payload }) {
+function CustomTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: Array<{ payload: { periode: string; km: number } }>;
+}) {
   if (!active || !payload || !payload.length) return null;
   const { periode, km } = payload[0].payload;
   return (
@@ -37,11 +35,38 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<Record<string, any> | null>(null);
   const [sessions, setSessions] = useState<Array<Record<string, any>>>([]);
   const [loading, setLoading] = useState(true);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const [activeIndex, setActiveIndex] = useState(null);
-  const moyenne = Math.round(
-    data.reduce((sum, d) => sum + d.km, 0) / data.length
-  );
+  const chartData = useMemo(() => {
+    if (!sessions.length) {
+      return [];
+    }
+
+    const lastSessions = [...sessions]
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(-4);
+
+    return lastSessions.map((session, index) => {
+      const date = new Date(session.date);
+      const start = new Date(date);
+      start.setDate(date.getDate() - 6);
+
+      const formatDate = (value: Date) =>
+        `${String(value.getDate()).padStart(2, "0")}/${String(
+          value.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+      return {
+        name: `S${index + 1}`,
+        km: Number(session.distance ?? 0),
+        periode: `${formatDate(start)} au ${formatDate(date)}`,
+      };
+    });
+  }, [sessions]);
+
+  const moyenne = chartData.length
+    ? Math.round(chartData.reduce((sum, d) => sum + d.km, 0) / chartData.length)
+    : 0;
 
   useEffect(() => {
     let isMounted = true;
@@ -170,7 +195,7 @@ export default function Dashboard() {
             <div className="chart-wrapper">
               <ResponsiveContainer>
                 <BarChart
-                  data={data}
+                  data={chartData}
                   margin={{ top: 20, right: 10, left: -10, bottom: 0 }}
                   onMouseLeave={() => setActiveIndex(null)}
                 >
@@ -200,9 +225,9 @@ export default function Dashboard() {
                     dataKey="km"
                     barSize={14}
                     radius={[7, 7, 7, 7]}
-                    onMouseEnter={(_, index) => setActiveIndex(index)}
+                    onMouseEnter={(_, index: number) => setActiveIndex(index)}
                   >
-                    {data.map((entry, index) => (
+                    {chartData.map((entry, index) => (
                       <Cell
                         key={entry.name}
                         fill={index === activeIndex ? COLOR_ACTIVE : COLOR_DEFAULT}
