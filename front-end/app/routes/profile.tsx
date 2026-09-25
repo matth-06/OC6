@@ -1,5 +1,7 @@
 import { useRequireAuth, useAuth } from "../hooks/useAuth";
 import { Link, useNavigate } from "react-router";
+import DashboardFooter from "../components/DashboardFooter";
+import DashboardHeader from "../components/DashboardHeader";
 
 export default function Profile() {
   const { isAuthenticated } = useRequireAuth();
@@ -12,7 +14,7 @@ export default function Profile() {
 
   const handleLogout = () => {
     logoutUser();
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   };
 
   const profile = user ?? {};

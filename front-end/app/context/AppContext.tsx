@@ -96,7 +96,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       login,
       logout,
     }),
-    [login, logout, token, user]
+    [login, logout, token, user],
   );
 
   // Le Provider transmet le contexte à tous ses descendants.

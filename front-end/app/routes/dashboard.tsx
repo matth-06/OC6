@@ -3,7 +3,7 @@ import { mockGetUserActivity, mockGetUserInfo } from "../data/mockData";
 import { useAuth, useRequireAuth } from "../hooks/useAuth";
 import DashboardFooter from "../components/DashboardFooter";
 import DashboardHeader from "../components/DashboardHeader";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ComposedChart, Line,} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ComposedChart, Line, PieChart, Pie,} from "recharts";
 import "../styles/dashboard.css";
 
 const COLOR_DEFAULT = "#aab4fb"; // barre au repos (mauve clair)
@@ -190,6 +190,16 @@ export default function Dashboard() {
 
     return Number((stats.totalDistance / sessions.length).toFixed(1));
   }, [sessions, stats.totalDistance]);
+
+  const donutData = useMemo(() => {
+    const completed = Math.max(completedSessions, 0);
+    const remaining = Math.max(weeklyGoal - completed, 0);
+
+    return [
+      { name: "réalisées", value: completed, color: "#2e57ff" },
+      { name: "restants", value: remaining, color: "rgba(46, 87, 255, 0.15)" },
+    ];
+  }, [completedSessions, weeklyGoal]);
 
   if (!isAuthenticated) {
     return null;
@@ -398,7 +408,7 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
-          {/* -------------------PIE CHART------------------------- */}
+          {/* -------------------DONUT CHART------------------------- */}
         <section className="week-header">
           <h3>Cette semaine</h3>
           <p>Du 23/06/2025 au 30/06/2025</p>
@@ -413,8 +423,26 @@ export default function Dashboard() {
             <p className="donut-subtitle">Courses hebdomadaire réalisées</p>
 
             <div className="donut-wrapper">
-              <div className="donut-chart" aria-label="Cible hebdomadaire">
-                <div className="donut-inner">
+              <div className="donut-chart-wrap" aria-label="Cible hebdomadaire">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={donutData}
+                      dataKey="value"
+                      innerRadius={58}
+                      outerRadius={86}
+                      startAngle={90}
+                      endAngle={-270}
+                      paddingAngle={0}
+                      stroke="none"
+                    >
+                      {donutData.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="donut-center">
                   <span className="donut-label">{completedSessions}</span>
                 </div>
               </div>
