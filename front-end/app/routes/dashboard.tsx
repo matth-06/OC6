@@ -1,14 +1,47 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
 import { mockGetUserActivity, mockGetUserInfo } from "../data/mockData";
 import { useAuth, useRequireAuth } from "../hooks/useAuth";
+import DashboardFooter from "../components/DashboardFooter";
+import DashboardHeader from "../components/DashboardHeader";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,} from "recharts";
+import "../styles/dashboard.css";
 
+
+// --- Données d'exemple : à remplacer par tes vraies données ---
+const data = [
+  { name: "S1", km: 20, periode: "28.05 au 03.06" },
+  { name: "S2", km: 24.5, periode: "04.06 au 10.06" },
+  { name: "S3", km: 15.5, periode: "11.06 au 17.06" },
+  { name: "S4", km: 30, periode: "18.06 au 24.06" },
+];
+ 
+const COLOR_DEFAULT = "#aab4fb"; // barre au repos (mauve clair)
+const COLOR_ACTIVE = "#2400ff"; // barre survolée (bleu vif)
+ 
+function CustomTooltip({ active, payload }) {
+  if (!active || !payload || !payload.length) return null;
+  const { periode, km } = payload[0].payload;
+  return (
+    <div className="dashboard-tooltip">
+      <div className="dashboard-tooltip-date">{periode}</div>
+      <div className="dashboard-tooltip-value">
+        {km.toString().replace(".", ",")} km
+      </div>
+    </div>
+  );
+}
+ 
 export default function Dashboard() {
   const { isAuthenticated } = useRequireAuth();
   const { token, user } = useAuth();
   const [profile, setProfile] = useState<Record<string, any> | null>(null);
   const [sessions, setSessions] = useState<Array<Record<string, any>>>([]);
   const [loading, setLoading] = useState(true);
+
+  const [activeIndex, setActiveIndex] = useState(null);
+  const moyenne = Math.round(
+    data.reduce((sum, d) => sum + d.km, 0) / data.length
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -72,9 +105,9 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
-        <div className="mx-auto max-w-4xl">
-          <p className="text-lg text-slate-600">Chargement du tableau de bord...</p>
+      <main className="dashboard-page dashboard-loading">
+        <div className="dashboard-shell">
+          <p>Chargement du tableau de bord...</p>
         </div>
       </main>
     );
@@ -85,78 +118,154 @@ export default function Dashboard() {
       ? `${activeUser.userInfos.firstName} ${activeUser.userInfos.lastName}`
       : activeUser?.username ?? "Utilisateur";
 
+  const joinedDate = activeUser?.userInfos?.createdAt ?? "2023-06-14";
+
   return (
-    <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm uppercase tracking-wide text-blue-600 font-semibold">Dashboard</p>
-            <h1 className="mt-2 text-3xl font-bold">Bienvenue, {fullName}</h1>
-            <p className="mt-2 text-slate-600">
-              Voici les informations associées à votre compte connecté.
-            </p>
-          </div>
-          <Link
-            to="/profile"
-            className="rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
-          >
-            Voir le profil
-          </Link>
-        </div>
+    <main className="dashboard-page">
+      <DashboardHeader />
 
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p className="text-sm text-slate-500">Objectif hebdo</p>
-            <p className="mt-3 text-3xl font-bold text-slate-900">
-              {activeUser?.weeklyGoal ?? activeUser?.goal ?? 0} km
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p className="text-sm text-slate-500">Distance totale</p>
-            <p className="mt-3 text-3xl font-bold text-slate-900">{stats.totalDistance.toFixed(1)} km</p>
-          </div>
-          <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p className="text-sm text-slate-500">Calories</p>
-            <p className="mt-3 text-3xl font-bold text-slate-900">{stats.totalCalories} kcal</p>
-          </div>
-        </div>
+      <div className="dashboard-shell">
+        <section className="top-summary">
+          <div className="profile-block">
+            <div className="profile-avatar">
+              {activeUser?.userInfos?.profilePicture ? (
+                <img src={activeUser.userInfos.profilePicture} alt={fullName} />
+              ) : (
+                <span>{fullName.charAt(0)}</span>
+              )}
+            </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <h2 className="mb-4 text-xl font-semibold">Dernières séances</h2>
-            {sessions.length === 0 ? (
-              <p className="text-slate-600">Aucune séance enregistrée pour ce compte.</p>
-            ) : (
-              <div className="space-y-3">
-                {sessions.slice(0, 5).map((session, index) => (
-                  <div key={`${session.date}-${index}`} className="flex items-center justify-between rounded border border-slate-200 p-3">
-                    <div>
-                      <p className="font-medium text-slate-800">{session.date}</p>
-                      <p className="text-sm text-slate-500">{session.duration} min</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-slate-800">{Number(session.distance ?? 0).toFixed(1)} km</p>
-                      <p className="text-sm text-slate-500">{session.caloriesBurned ?? 0} kcal</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <h2 className="mb-4 text-xl font-semibold">Profil</h2>
-            <div className="space-y-3 text-sm text-slate-700">
-              <p><span className="font-medium text-slate-900">Nom :</span> {activeUser?.userInfos?.lastName ?? "-"}</p>
-              <p><span className="font-medium text-slate-900">Prénom :</span> {activeUser?.userInfos?.firstName ?? "-"}</p>
-              <p><span className="font-medium text-slate-900">Âge :</span> {activeUser?.userInfos?.age ?? "-"}</p>
-              <p><span className="font-medium text-slate-900">Poids :</span> {activeUser?.userInfos?.weight ?? "-"} kg</p>
-              <p><span className="font-medium text-slate-900">Taille :</span> {activeUser?.userInfos?.height ?? "-"} cm</p>
-              <p><span className="font-medium text-slate-900">Identifiant :</span> {activeUser?.username ?? "-"}</p>
+            <div className="profile-text">
+              <h2>{fullName}</h2>
+              <p>Membre depuis le 14 juin 2023</p>
             </div>
           </div>
-        </div>
+              
+          <div className="distance-stats">
+              <p>Distance totale parcourue</p>
+            </div>
+          <div className="distance-card">
+            <div className="distance-icon">↗</div>
+            <div className="distance-value">{Math.round(stats.totalDistance || 312)} km</div>
+          </div>
+        </section>
+
+        <section className="section-title">
+          <h3>Vos dernières performances</h3>
+        </section>
+
+        <section className="performance-grid">
+          <div className="performance-card">
+            <div className="performance-header">
+              <h2 className="performance-title">{moyenne}km en moyenne</h2>
+              <div className="performance-range">
+                <span className="performance-range-btn" aria-hidden="true">‹</span>
+                <span>28 mai - 25 juin</span>
+                <span className="performance-range-btn" aria-hidden="true">›</span>
+              </div>
+            </div>
+
+            <p className="performance-subtitle">Total des kilomètres 4 dernières semaines</p>
+
+            <div className="chart-wrapper">
+              <ResponsiveContainer>
+                <BarChart
+                  data={data}
+                  margin={{ top: 20, right: 10, left: -10, bottom: 0 }}
+                  onMouseLeave={() => setActiveIndex(null)}
+                >
+                  <CartesianGrid
+                    vertical={false}
+                    strokeDasharray="3 3"
+                    stroke="#e5e7eb"
+                  />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={{ stroke: "#d1d5db" }}
+                    tickLine={false}
+                    tick={{ fill: "#6b7280", fontSize: 13 }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#9ca3af", fontSize: 12 }}
+                    domain={[0, 30]}
+                    ticks={[0, 10, 20, 30]}
+                  />
+                  <Tooltip
+                    cursor={false}
+                    content={<CustomTooltip />}
+                  />
+                  <Bar
+                    dataKey="km"
+                    barSize={14}
+                    radius={[7, 7, 7, 7]}
+                    onMouseEnter={(_, index) => setActiveIndex(index)}
+                  >
+                    {data.map((entry, index) => (
+                      <Cell
+                        key={entry.name}
+                        fill={index === activeIndex ? COLOR_ACTIVE : COLOR_DEFAULT}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="legend-row">
+              <span className="legend-mark" />
+              Km
+            </div>
+          </div>
+        </section>
+
+        <section className="week-header">
+          <h3>Cette semaine</h3>
+          <p>Du 23/06/2025 au 30/06/2025</p>
+        </section>
+
+        <section className="bottom-grid">
+          <article className="panel donut-panel">
+            <div className="donut-title">
+              <span className="count">x4</span>
+              <span className="text">sur objectif de 6</span>
+            </div>
+            <p className="donut-subtitle">Courses hebdomadaire réalisées</p>
+
+            <div className="donut-wrapper">
+              <div className="donut-chart" aria-label="Cible hebdomadaire">
+                <div className="donut-inner">
+                  <span className="donut-label">4</span>
+                </div>
+              </div>
+              <div className="donut-legend">
+                <span className="legend-dot primary" />
+                <span>2 restants</span>
+              </div>
+              <div className="donut-legend lower">
+                <span className="legend-dot secondary" />
+                <span>4 réalisées</span>
+              </div>
+            </div>
+          </article>
+
+          <article className="panel metric-panel">
+            <div className="metric-card">
+              <span className="metric-label">Durée d’activité</span>
+              <strong>140 <span className="metric-unit">minutes</span></strong>
+            </div>
+
+            <div className="metric-card">
+              <span className="metric-label">Distance</span>
+              <strong>21.7 <span className="metric-unit">kilomètres</span></strong>
+            </div>
+          </article>
+        </section>
+        
       </div>
+
+      <DashboardFooter />
     </main>
   );
 }
