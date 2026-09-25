@@ -5,6 +5,7 @@ import DashboardFooter from "../components/DashboardFooter";
 import DashboardHeader from "../components/DashboardHeader";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ComposedChart, Line, PieChart, Pie,} from "recharts";
 import "../styles/dashboard.css";
+import ProfileBlock from "~/components/ProfileBlock";
 
 const COLOR_DEFAULT = "#aab4fb"; // barre au repos (mauve clair)
 const COLOR_ACTIVE = "#2400ff"; // barre survolée (bleu vif)
@@ -215,34 +216,14 @@ export default function Dashboard() {
     );
   }
 
-  const fullName =
-    activeUser?.userInfos?.firstName && activeUser?.userInfos?.lastName
-      ? `${activeUser.userInfos.firstName} ${activeUser.userInfos.lastName}`
-      : activeUser?.username ?? "Utilisateur";
-
-  const joinedDate = activeUser?.userInfos?.createdAt ?? "2023-06-14";
-
+  
   return (
     <main className="dashboard-page">
       <DashboardHeader />
       <div className="dashboard-shell">
         {/* -------------------TOP------------------------- */}
         <section className="top-summary">
-          <div className="profile-block">
-            <div className="profile-avatar">
-              {activeUser?.userInfos?.profilePicture ? (
-                <img src={activeUser.userInfos.profilePicture} alt={fullName} />
-              ) : (
-                <span>{fullName.charAt(0)}</span>
-              )}
-            </div>
-
-            <div className="profile-text">
-              <h2>{fullName}</h2>
-              <p>Membre depuis le 14 juin 2023</p>
-            </div>
-          </div>
-              
+          <ProfileBlock />
           <div className="distance-stats">
               <p>Distance totale parcourue</p>
             </div>
