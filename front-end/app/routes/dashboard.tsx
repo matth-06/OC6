@@ -6,9 +6,13 @@ import DashboardHeader from "../components/DashboardHeader";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ComposedChart, Line,} from "recharts";
 import "../styles/dashboard.css";
 
-
 const COLOR_DEFAULT = "#aab4fb"; // barre au repos (mauve clair)
 const COLOR_ACTIVE = "#2400ff"; // barre survolée (bleu vif)
+const COLOR_MIN = "#f7c9c2"; // barre Min (rose pâle)
+const COLOR_MAX = "#f6390d"; // barre Max BPM (rouge/orange)
+const LINE_IDLE = "#c9cdfa"; // ligne au repos (lavande pâle)
+const LINE_ACTIVE = "#1e1bfa"; // ligne survolée (bleu vif)
+
  
 function CustomTooltip({
   active,
@@ -36,6 +40,28 @@ export default function Dashboard() {
   const [sessions, setSessions] = useState<Array<Record<string, any>>>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [hovered, setHovered] = useState(false);
+  const lineColor = hovered ? LINE_ACTIVE : LINE_IDLE;
+  const dotColor = "#1e1bfa"; // les points restent bleus dans les deux états
+
+  const bpmData = useMemo(() => {
+    if (!sessions.length) {
+      return [];
+    }
+
+    const lastSessions = [...sessions]
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(-7);
+
+    const dayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
+    return lastSessions.map((session, index) => ({
+      name: dayNames[index] ?? `J${index + 1}`,
+      min: Number(session.heartRate?.min ?? 0),
+      max: Number(session.heartRate?.max ?? 0),
+      trend: Number(session.heartRate?.average ?? 0),
+    }));
+  }, [sessions]);
 
   const chartData = useMemo(() => {
     if (!sessions.length) {
@@ -67,6 +93,19 @@ export default function Dashboard() {
   const moyenne = chartData.length
     ? Math.round(chartData.reduce((sum, d) => sum + d.km, 0) / chartData.length)
     : 0;
+
+  const heartRateAverage = useMemo(() => {
+    if (!sessions.length) {
+      return 0;
+    }
+
+    const total = sessions.reduce(
+      (sum, session) => sum + Number(session.heartRate?.average ?? 0),
+      0
+    );
+
+    return Math.round(total / sessions.length);
+  }, [sessions]);
 
   useEffect(() => {
     let isMounted = true;
@@ -148,8 +187,8 @@ export default function Dashboard() {
   return (
     <main className="dashboard-page">
       <DashboardHeader />
-
       <div className="dashboard-shell">
+        {/* -------------------TOP------------------------- */}
         <section className="top-summary">
           <div className="profile-block">
             <div className="profile-avatar">
@@ -174,12 +213,13 @@ export default function Dashboard() {
             <div className="distance-value">{Math.round(stats.totalDistance || 312)} km</div>
           </div>
         </section>
-
+              {/* -------------------CHART------------------------- */}
         <section className="section-title">
           <h3>Vos dernières performances</h3>
         </section>
 
         <section className="performance-grid">
+          {/* -------------------CHART 1------------------------- */}
           <div className="performance-card">
             <div className="performance-header">
               <h2 className="performance-title">{moyenne}km en moyenne</h2>
@@ -241,6 +281,92 @@ export default function Dashboard() {
             <div className="legend-row">
               <span className="legend-mark" />
               Km
+            </div>
+          </div>
+          {/* -------------------CHART 2------------------------- */}
+          <div className="heart-rate-card">
+            <div className="heart-rate-header">
+              <h2 className="heart-rate-title">{heartRateAverage} BPM</h2>
+              <div className="heart-rate-range">
+                <span className="heart-rate-range-btn" aria-hidden="true">‹</span>
+                <span>28 mai - 04 juin</span>
+                <span className="heart-rate-range-btn" aria-hidden="true">›</span>
+              </div>
+            </div>
+            <p className="heart-rate-subtitle">Fréquence cardiaque moyenne</p>
+
+            <div
+              className="heart-rate-chart"
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
+            >
+              <ResponsiveContainer>
+                <ComposedChart
+                  data={bpmData}
+                  margin={{ top: 20, right: 10, left: -10, bottom: 0 }}
+                  barGap={-6}
+                >
+                  <CartesianGrid
+                    vertical={false}
+                    strokeDasharray="3 3"
+                    stroke="#f0f0f0"
+                  />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={{ stroke: "#d1d5db" }}
+                    tickLine={false}
+                    tick={{ fill: "#6b7280", fontSize: 13 }}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#9ca3af", fontSize: 12 }}
+                    domain={[130, 187]}
+                    ticks={[130, 145, 160, 187]}
+                  />
+
+                  <Bar
+                    dataKey="min"
+                    name="Min"
+                    barSize={10}
+                    radius={[5, 5, 5, 5]}
+                    fill={COLOR_MIN}
+                  />
+                  <Bar
+                    dataKey="max"
+                    name="Max BPM"
+                    barSize={14}
+                    radius={[7, 7, 7, 7]}
+                    fill={COLOR_MAX}
+                  />
+
+                  <Line
+                    dataKey="trend"
+                    name="Max BPM"
+                    type="monotone"
+                    stroke={lineColor}
+                    strokeWidth={hovered ? 2.5 : 2}
+                    dot={{ r: 4, fill: dotColor, strokeWidth: 0 }}
+                    activeDot={false}
+                    isAnimationActive={false}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="heart-rate-legend">
+              <span className="legend-item">
+                <span className="legend-swatch legend-swatch-min" />
+                Min
+              </span>
+              <span className="legend-item">
+                <span className="legend-swatch legend-swatch-max" />
+                Max BPM
+              </span>
+              <span className="legend-item">
+                <span className="legend-swatch legend-swatch-trend" />
+                Max BPM
+              </span>
             </div>
           </div>
         </section>
