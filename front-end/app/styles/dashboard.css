@@ -38,7 +38,6 @@ a {
 .dashboard-page {
   min-height: 100vh;
   background: var(--dashboard-bg);
-  padding: 1.2rem 1rem 0;
 }
 
 .dashboard-shell {
@@ -352,6 +351,9 @@ a {
 
 .donut-panel {
   padding: 1.5rem 1.4rem 1.2rem;
+  background: rgba(255, 255, 255);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 0.9rem;
 }
 
 .donut-title {
@@ -465,7 +467,7 @@ a {
 }
 
 .metric-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255);
   border: 1px solid rgba(148, 163, 184, 0.16);
   border-radius: 0.9rem;
   padding: 1.2rem 1.1rem;

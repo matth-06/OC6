@@ -370,7 +370,7 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
-
+          {/* -------------------PIE CHART------------------------- */}
         <section className="week-header">
           <h3>Cette semaine</h3>
           <p>Du 23/06/2025 au 30/06/2025</p>

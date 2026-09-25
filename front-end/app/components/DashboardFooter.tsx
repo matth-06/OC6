@@ -6,7 +6,7 @@ export default function DashboardFooter() {
       <div className="footer-links">
         <span>Conditions générales</span>
         <span>Contact</span>
-        <span className="small-icon">◍</span>
+        <span className="small-icon"></span>
       </div>
     </footer>
   );
