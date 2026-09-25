@@ -25,6 +25,7 @@ export default function Profile() {
 
   return (
     <main className="min-h-screen bg-slate-50 p-8">
+      <DashboardHeader />
       <div className="mx-auto max-w-3xl">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-slate-900">Profil</h1>
@@ -82,6 +83,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      <DashboardFooter />
     </main>
   );
 }

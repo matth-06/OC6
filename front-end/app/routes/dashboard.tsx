@@ -247,7 +247,7 @@ export default function Dashboard() {
               <p>Distance totale parcourue</p>
             </div>
           <div className="distance-card">
-            <div className="distance-icon">↗</div>
+            <div className="distance-icon"></div>
             <div className="distance-value">{Math.round(stats.totalDistance || 312)} km</div>
           </div>
         </section>
@@ -458,14 +458,14 @@ export default function Dashboard() {
           </article>
 
           <article className="panel metric-panel">
-            <div className="metric-card">
+            <div className="metric-card-1">
               <span className="metric-label">Durée d’activité</span>
-              <strong>{totalMinutes} <span className="metric-unit">minutes</span></strong>
+              <strong>{totalMinutes} <span className="metric-unit-1">minutes</span></strong>
             </div>
 
-            <div className="metric-card">
+            <div className="metric-card-2">
               <span className="metric-label">Distance</span>
-              <strong>{averageDistance} <span className="metric-unit">kilomètres</span></strong>
+              <strong>{averageDistance} <span className="metric-unit-2">kilomètres</span></strong>
             </div>
           </article>
         </section>

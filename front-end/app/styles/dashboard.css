@@ -50,7 +50,7 @@ a {
   grid-template-columns: 3fr 1fr 1fr;
   align-items: center;
   gap: 2.5rem;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255);
   border-radius: 1.2rem;
   padding: 2rem 1.8rem 1.5rem;
   margin-top: 3.5rem;
@@ -118,7 +118,7 @@ a {
   min-width: 260px;
   padding: 1.1rem 1.6rem;
   border-radius: 1.1rem;
-  background: linear-gradient(135deg, var(--blue) 0%, #1a49d0 100%);
+  background: #0B23F4;
   color: #fff;
   box-shadow: 0 16px 30px rgba(35, 86, 255, 0.22);
 }
@@ -132,6 +132,10 @@ a {
   background: rgba(255, 255, 255, 0.18);
   font-size: 1.4rem;
   font-weight: 700;
+  background-image: url('./image/distance.png');
+  background-size: contain;      /* redimensionne l'image DANS le conteneur */
+  background-repeat: no-repeat;  /* évite la répétition en mosaïque */
+  background-position: center;   /* centre l'image */
 }
 
 .distance-value {
@@ -460,7 +464,7 @@ a {
   padding: 1.4rem 1.25rem;
 }
 
-.metric-card {
+.metric-card-1,.metric-card-2 {
   background: rgba(255, 255, 255);
   border: 1px solid rgba(148, 163, 184, 0.16);
   border-radius: 0.9rem;
@@ -475,21 +479,33 @@ a {
   color: #47556c;
 }
 
-.metric-card strong {
+.metric-card-1 strong{
   font-size: clamp(2rem, 1.8vw, 2.7rem);
   line-height: 1;
   letter-spacing: -0.07em;
   font-weight: 800;
   color: var(--blue);
 }
-
-.metric-card strong .metric-unit {
+.metric-card-2 strong {
+  font-size: clamp(2rem, 1.8vw, 2.7rem);
+  line-height: 1;
+  letter-spacing: -0.07em;
+  font-weight: 800;
+  color: var(--orange);
+}
+ .metric-unit-1 {
   font-size: 0.8em;
-  color: #5a6780;
+  color: var(--blue);
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
+ .metric-unit-2 {
+  font-size: 0.8em;
+  color: var(--orange);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
 .dashboard-loading {
   display: grid;
   place-items: center;

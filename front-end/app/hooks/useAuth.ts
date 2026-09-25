@@ -27,7 +27,7 @@ export function useRequireAuth() {
 
   useEffect(() => {
     if (!isAuth) {
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [isAuth, navigate]);
 
