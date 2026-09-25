@@ -163,6 +163,34 @@ export default function Dashboard() {
     );
   }, [sessions]);
 
+  const weeklyGoal = useMemo(() => {
+    return activeUser?.weeklyGoal ?? activeUser?.goal ?? 6;
+  }, [activeUser]);
+
+  const completedSessions = useMemo(() => {
+    if (!sessions.length) {
+      return 0;
+    }
+
+    return Math.min(sessions.length, weeklyGoal);
+  }, [sessions, weeklyGoal]);
+
+  const totalMinutes = useMemo(() => {
+    if (!sessions.length) {
+      return 0;
+    }
+
+    return sessions.reduce((sum, session) => sum + Number(session.duration ?? 0), 0);
+  }, [sessions]);
+
+  const averageDistance = useMemo(() => {
+    if (!sessions.length) {
+      return 0;
+    }
+
+    return Number((stats.totalDistance / sessions.length).toFixed(1));
+  }, [sessions, stats.totalDistance]);
+
   if (!isAuthenticated) {
     return null;
   }
@@ -379,24 +407,24 @@ export default function Dashboard() {
         <section className="bottom-grid">
           <article className="panel donut-panel">
             <div className="donut-title">
-              <span className="count">x4</span>
-              <span className="text">sur objectif de 6</span>
+              <span className="count">x{completedSessions}</span>
+              <span className="text">sur objectif de {weeklyGoal}</span>
             </div>
             <p className="donut-subtitle">Courses hebdomadaire réalisées</p>
 
             <div className="donut-wrapper">
               <div className="donut-chart" aria-label="Cible hebdomadaire">
                 <div className="donut-inner">
-                  <span className="donut-label">4</span>
+                  <span className="donut-label">{completedSessions}</span>
                 </div>
               </div>
               <div className="donut-legend">
                 <span className="legend-dot primary" />
-                <span>2 restants</span>
+                <span>{Math.max(weeklyGoal - completedSessions, 0)} restants</span>
               </div>
               <div className="donut-legend lower">
                 <span className="legend-dot secondary" />
-                <span>4 réalisées</span>
+                <span>{completedSessions} réalisées</span>
               </div>
             </div>
           </article>
@@ -404,12 +432,12 @@ export default function Dashboard() {
           <article className="panel metric-panel">
             <div className="metric-card">
               <span className="metric-label">Durée d’activité</span>
-              <strong>140 <span className="metric-unit">minutes</span></strong>
+              <strong>{totalMinutes} <span className="metric-unit">minutes</span></strong>
             </div>
 
             <div className="metric-card">
               <span className="metric-label">Distance</span>
-              <strong>21.7 <span className="metric-unit">kilomètres</span></strong>
+              <strong>{averageDistance} <span className="metric-unit">kilomètres</span></strong>
             </div>
           </article>
         </section>
