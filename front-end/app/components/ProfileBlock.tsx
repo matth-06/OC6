@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { useAuth, useRequireAuth } from "../hooks/useAuth";
+import {  useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import "../styles/profileBlock.css";
 
 export default function ProfileBlock() {
   const { user} = useAuth();

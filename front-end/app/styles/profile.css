@@ -1,0 +1,142 @@
+/* profile.css */
+
+.profile-page {
+  min-height: 100vh;
+  background-color: #eef0fc;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-layout {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 24px;
+  padding: 40px 200px;
+  flex: 1;
+}
+
+/* ---------- Colonne de gauche ---------- */
+
+.profile-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.profile-header-card,
+.profile-details {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.04);
+}
+
+.profile-header-card {
+  display: flex;
+  align-items: center;
+}
+
+.profile-details h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 16px 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-details p {
+  font-size: 15px;
+  color: #4b5563;
+  margin: 0 0 14px 0;
+}
+
+.profile-details p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Panneau des statistiques ---------- */
+
+.stats-panel {
+  max-width: 100%;
+}
+
+.stats-header {
+  margin-bottom: 20px;
+}
+
+.stats-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.stats-header p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #1a2bef, #1522c9);
+  border-radius: 16px;
+  padding: 20px 24px;
+  color: #ffffff;
+}
+
+.stat-card--wide {
+  grid-column: 1 / -1;
+}
+
+.stat-card h3 {
+  font-size: 14px;
+  font-weight: 400;
+  color: #c7cdfb;
+  margin: 0 0 14px 0;
+}
+
+.stat-card p {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+/* Sépare la grande valeur de l'unité (ex: "27h" / "15min") */
+.stat-card p span,
+.stat-card p small {
+  font-size: 15px;
+  font-weight: 400;
+  color: #dbe0fd;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+  .profile-layout {
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .profile-side {
+    width: 100%;
+  }
+
+  .stats-section {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card--wide {
+    grid-column: auto;
+  }
+}
