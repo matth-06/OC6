@@ -111,7 +111,7 @@ export default function Profile() {
               <h3>Nombre de jours de repos</h3>
               <p>{stats.restDays} jours</p>
             </div>
-            <div className="stat-card stat-card--wide">
+            <div className="stat-card">
               <h3>Nombre de sessions</h3>
               <p>{sessions.length} sessions</p>
             </div>
