@@ -23,7 +23,7 @@ const MOCK_USERS = [
     id: "user123",
     weeklyGoal: 2,
     userInfos: {
-      firstName: "Sophie",
+      firstName: "Sophie1",
       lastName: "Martin",
       age: 32,
       gender: "female",

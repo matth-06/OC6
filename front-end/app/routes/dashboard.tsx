@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { mockGetUserActivity, mockGetUserInfo } from "../data/mockData";
+import { getUserActivity, getUserInfo } from "../data/api";
 import { useAuth, useRequireAuth } from "../hooks/useAuth";
 import DashboardFooter from "../components/DashboardFooter";
 import DashboardHeader from "../components/DashboardHeader";
@@ -119,8 +119,8 @@ export default function Dashboard() {
 
       try {
         const [connectedUser, activity] = await Promise.all([
-          mockGetUserInfo(token),
-          mockGetUserActivity(token),
+          getUserInfo(token),
+          getUserActivity(token),
         ]);
 
         if (isMounted) {

@@ -100,7 +100,7 @@ a {
 .performance-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
-  gap: 2rem;
+  gap: 15rem;
   margin-top: 1.5rem;
   align-items: stretch;
 }

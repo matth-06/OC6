@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router";
-import { mockLogin } from "../data/mockData";
+import { loginUser } from "../data/api";
 import { useAuth } from "../hooks/useAuth";
 import "../styles/login.css";
 
@@ -32,7 +32,7 @@ export default function Login() {
         throw new Error("Veuillez remplir tous les champs");
       }
 
-      const response = await mockLogin(username.trim(), password);
+      const response = await loginUser(username.trim(), password);
       login(response.token);
       navigate("/dashboard", { replace: true });
     } catch (err) {

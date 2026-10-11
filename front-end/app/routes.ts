@@ -12,7 +12,6 @@ export default [
   
   // Authentification (non protégées)
   index("routes/login.tsx"),
-  route("register", "routes/register.tsx"),
 
   // Routes protégées
   route("dashboard", "routes/dashboard.tsx"),

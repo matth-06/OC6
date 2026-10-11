@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { mockGetUserInfo } from "../data/mockData";
+import { getUserInfo } from "../data/api";
 import { getToken, removeToken, setToken } from "../utils/auth";
 
 // Définition du type de valeur accessible depuis le contexte global.
@@ -64,7 +64,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         // On récupère le profil de l’utilisateur à partir du token.
         // Cette information devient alors immédiatement disponible à tous les composants.
-        const connectedUser = await mockGetUserInfo(token);
+        const connectedUser = await getUserInfo(token);
         if (isMounted) {
           setUser(connectedUser);
         }

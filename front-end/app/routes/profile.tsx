@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { mockGetUserActivity } from "../data/mockData";
+import { getUserActivity } from "../data/api";
 import { useRequireAuth, useAuth } from "../hooks/useAuth";
 import DashboardFooter from "../components/DashboardFooter";
 import DashboardHeader from "../components/DashboardHeader";
@@ -19,7 +19,7 @@ export default function Profile() {
       if (!token) return;
 
       try {
-        const activity = await mockGetUserActivity(token);
+        const activity = await getUserActivity(token);
         if (isMounted) setSessions(activity);
       } catch {
         if (isMounted) setSessions([]);

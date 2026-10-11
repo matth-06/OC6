@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router";
+import { isMock } from "../data/api";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Register() {
@@ -43,6 +44,10 @@ export default function Register() {
 
       if (password !== confirmPassword) {
         throw new Error("Passwords do not match");
+      }
+
+      if (!isMock) {
+        throw new Error("L'inscription n'est pas disponible avec le backend actuel.");
       }
 
       // TODO: Remplacer par un vrai appel API
